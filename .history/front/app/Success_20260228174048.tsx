@@ -10,12 +10,6 @@ import {
 } from "lucide-react";
 import { Page } from "../types";
 
-// Исправлена ошибка TS через приведение (import.meta as any)
-const API_URL = ((import.meta as any).env?.VITE_API_URL || "").replace(
-  /\/$/,
-  "",
-);
-
 interface Props {
   onNavigate: (p: Page) => void;
 }
@@ -27,6 +21,8 @@ interface PurchaseData {
   dateStr: string;
   serverIp: string;
 }
+
+const API_URL = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
 
 export const Success: React.FC<Props> = ({ onNavigate }) => {
   const [copied, setCopied] = useState(false);

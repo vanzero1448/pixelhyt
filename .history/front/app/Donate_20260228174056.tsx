@@ -10,11 +10,7 @@ import {
 } from "lucide-react";
 
 // ── BACKEND ──────────────────────────────────────────────────────
-// Исправлена ошибка TS через приведение (import.meta as any)
-const API_URL = ((import.meta as any).env?.VITE_API_URL || "").replace(
-  /\/$/,
-  "",
-);
+const API_URL = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
 
 // ── Types ─────────────────────────────────────────────────────────
 interface Rank {
