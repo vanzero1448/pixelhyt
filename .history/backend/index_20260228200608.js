@@ -133,6 +133,26 @@ const RANK_DISPLAY = {
 };
 
 // ┌─────────────────────────────────────────────────────┐
+// │             PREMIUM EMOJI (Bot API 9.4)            │
+// └─────────────────────────────────────────────────────┘
+// Как получить ID:
+// 1. Зайди в Telegram с аккаунта-владельца бота (должен быть Premium)
+// 2. Отправь нужный эмодзи в ЛС боту
+// 3. В webhook-логе найди update → message → entities[0] → custom_emoji_id
+//    Пример: "5368324170671202286"
+const EMOJI_IDS = {
+  money: "5368324170671202286", // 💸
+  user: "5377744794887935437", // 👤
+  gem: "5380060366376032891", // 💎
+  clock: "5368320921923429848", // 🕒
+  key: "5379669575891700809", // 🔑
+  globe: "5389102131527556772", // 🌐
+  check: "5377744794887935437", // ✅
+  cross: "5380060366376032891", // ❌ (красный крест)
+  rank: "5368324170671202286", // для ранга
+};
+
+// ┌─────────────────────────────────────────────────────┐
 // │                 COMMAND BUILDER                     │
 // └─────────────────────────────────────────────────────┘
 function buildCommands(itemId, itemType, nick) {
@@ -268,82 +288,51 @@ async function telegramRequest(method, body) {
   });
 }
 
-// ┌─────────────────────────────────────────────────────┐
-// │    PREMIUM EMOJI  (Telegram Bot API 7.2+ tg-emoji)  │
-// │  Как получить ID:                                   │
-// │  1. Отправь premium стикер/эмодзи боту в личку      │
-// │  2. Смотри webhook лог → entities[n].custom_emoji_id│
-// └─────────────────────────────────────────────────────┘
-const EMOJI_IDS = {
-  money: "5368324170671202286", // 💸
-  user: "5377744794887935437", // 👤
-  gem: "5380060366376032891", // 💎
-  clock: "5368320921923429848", // 🕒
-  key: "5379669575891700809", // 🔑
-  globe: "5389102131527556772", // 🌐
-  check: "5368324170671202100", // ✅
-  cross: "5380060366376032001", // ❌
-  fire: "5368324170671200001", // 🔥
-};
-
-// Shorthand: wraps emoji in <tg-emoji> for Telegram Premium clients
-// На обычных клиентах отображается fallback-символ — всё работает у всех
-const tge = (id, fallback) =>
-  `<tg-emoji emoji-id="${id}">${fallback}</tg-emoji>`;
-
-// ─── Premium Telegram message ──────────────────────────
+// ─── Premium beautiful Telegram message (Bot API 9.4) ─────
 function buildPurchaseMessage(p) {
-  const rankInfo = RANK_DISPLAY[p.rankName] ?? {
-    icon: "🎮",
-    label: p.rankName ?? "Unknown",
-  };
-  const periodMap = {
-    forever: "♾️  Навсегда",
-    month: "📅  1 месяц",
-    quarter: "🗓  3 месяца",
-  };
-  const period = p.itemId?.includes("_")
-    ? (periodMap[p.itemId.split("_").pop()] ?? "♾️  Навсегда")
+  const rankInfo = RANK_DISPLAY[p.rankName] ?? { icon: "🎮", label: p.rankName ?? "Unknown" };
+  const periodMap = { forever: "♾️  Навсегда", month: "📅  1 месяц", quarter: "🗓  3 месяца" };
+  const period    = p.itemId?.includes("_")
+    ? periodMap[p.itemId.split("_").pop()] ?? "♾️  Навсегда"
     : "♾️  Навсегда";
 
-  const D = "━━━━━━━━━━━━━━━━━━━━━━";
+  const divider   = "━━━━━━━━━━━━━━━━━━━━━━";
   const testBadge = IS_TEST ? "\n⚠️ <b>[ТЕСТОВЫЙ РЕЖИМ]</b>" : "";
 
-  const statusLine = p.revoked
-    ? `${tge(EMOJI_IDS.cross, "❌")} <b>СТАТУС:  ПРИВИЛЕГИЯ ОТОЗВАНА</b>`
-    : `${tge(EMOJI_IDS.check, "✅")} <b>СТАТУС:  ПРИВИЛЕГИЯ ВЫДАНА</b>`;
-
   return [
-    `╔════════════════════════╗`,
-    `  ${tge(EMOJI_IDS.money, "💸")} <b>НОВАЯ ПОКУПКА</b>${testBadge}`,
-    `╚════════════════════════╝`,
+    <tg-emoji emoji-id="${EMOJI_IDS.money}">💸</tg-emoji> <b>НОВАЯ ПОКУПКА</b>${testBadge},
     ``,
-    `${rankInfo.icon} <b>${p.itemLabel}</b>`,
-    D,
-    `${tge(EMOJI_IDS.user, "👤")}  <b>Игрок:</b>   <code>${p.nick}</code>`,
-    `${tge(EMOJI_IDS.gem, "💎")}  <b>Ранг:</b>    ${rankInfo.icon} <code>${rankInfo.label}</code>`,
-    `⏳  <b>Период:</b>  ${period}`,
-    `${tge(EMOJI_IDS.money, "💰")}  <b>Сумма:</b>   <code>${p.price} ₽</code>`,
-    `${tge(EMOJI_IDS.key, "🔑")}  <b>Инвойс:</b>  <code>#${p.invId}</code>`,
-    `${tge(EMOJI_IDS.clock, "🕒")}  <b>Время:</b>   <code>${p.dateStr}</code>`,
-    D,
-    `${tge(EMOJI_IDS.globe, "🌐")}  <b>Сервер:</b>  <code>${SERVER_IP}</code>`,
+    ${rankInfo.icon} <b>${p.itemLabel}</b>,
+    divider,
+    <tg-emoji emoji-id="${EMOJI_IDS.user}">👤</tg-emoji>  <b>Игрок:</b>   <code>${p.nick}</code>,
+    <tg-emoji emoji-id="${EMOJI_IDS.gem}">💎</tg-emoji>  <b>Ранг:</b>    ${rankInfo.icon} <code>${rankInfo.label}</code>,
+    <tg-emoji emoji-id="${EMOJI_IDS.clock}">⏳</tg-emoji>  <b>Период:</b>  ${period},
+    <tg-emoji emoji-id="${EMOJI_IDS.money}">💰</tg-emoji>  <b>Сумма:</b>   <code>${p.price} ₽</code>,
+    <tg-emoji emoji-id="${EMOJI_IDS.key}">🔑</tg-emoji>  <b>Инвойс:</b>  <code>#${p.invId}</code>,
+    <tg-emoji emoji-id="${EMOJI_IDS.clock}">🕒</tg-emoji>  <b>Время:</b>   <code>${p.dateStr}</code>,
+    divider,
+    <tg-emoji emoji-id="${EMOJI_IDS.globe}">🌐</tg-emoji>  <b>Сервер:</b>  <code>${SERVER_IP}</code>,
     ``,
-    statusLine,
+    p.revoked
+      ? ❌ <b>СТАТУС:  ПРИВИЛЕГИЯ ОТОЗВАНА</b>
+      : ✅ <b>СТАТУС:  ПРИВИЛЕГИЯ ВЫДАНА</b>,
     ``,
-    `<i>${tge(EMOJI_IDS.fire, "🔥")} Pixel Premium  •  powered by Pixel Backend v3.0</i>`,
-  ].join("\n");
+    <i>🔥 Pixel Premium • Bot API 9.4 • colored buttons</i>
+  ].join('\n');
 }
 
+// ─── Keyboard: active purchase ─────────────────────────
 // ─── Keyboard: active purchase ─────────────────────────
 function activeKeyboard(invId) {
   return {
     inline_keyboard: [
-      [{ text: "🔴  Отозвать привилегию", callback_data: `revoke|${invId}` }],
       [
-        { text: "🕹  Открыть сервер", url: `minecraft://${SERVER_IP}` },
-        { text: "🌐  Сайт", url: SITE_URL },
-      ],
+        {
+          text: "🌐  Сайт",
+          url: SITE_URL,
+          style: "primary"   // синяя кнопка (нейтральная и красивая)
+        }
+      ]
     ],
   };
 }
@@ -351,10 +340,14 @@ function activeKeyboard(invId) {
 // ─── Keyboard: revoked ────────────────────────────────
 const revokedKeyboard = {
   inline_keyboard: [
-    [{ text: "✅  Привилегия отозвана", callback_data: "noop" }],
+    [{
+      text: "✅  Привилегия отозвана",
+      callback_data: "noop",
+      style: "success",                    // зелёная (успешно)
+      icon_custom_emoji_id: EMOJI_IDS.check
+    }],
     [
-      { text: "🕹  Открыть сервер", url: `minecraft://${SERVER_IP}` },
-      { text: "🌐  Сайт", url: SITE_URL },
+      { text: "🌐  Сайт",            url: SITE_URL },
     ],
   ],
 };
@@ -405,8 +398,6 @@ const errorHandler = (err, _req, res, _next) => {
 // ┌─────────────────────────────────────────────────────┐
 // │                     ROUTES                         │
 // └─────────────────────────────────────────────────────┘
-
-console.log("🔍 FULL WEBHOOK UPDATE:", JSON.stringify(req.body, null, 2));
 
 // ── Health ─────────────────────────────────────────────
 app.get("/health", (_req, res) =>
