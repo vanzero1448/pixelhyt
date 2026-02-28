@@ -12,7 +12,9 @@ import {
 } from "lucide-react";
 
 const SITE = "https://pixelhytale.pages.dev";
-const SUPPORT_EMAIL = "pixelhytale@mail.ru";
+const SUPPORT_EMAIL = "pixelhytale@mail.ru
+
+";
 const OWNER_NAME = "Galuzo Artem Mikhailovich";
 const OWNER_INN = "502505389890";
 const EFFECTIVE_DATE = "01.06.2025";
