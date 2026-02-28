@@ -297,7 +297,7 @@ app.post("/create-payment", payLimiter, (req, res) => {
   url.searchParams.set("shp_type", itemType);
   url.searchParams.set("SuccessURL", `${SITE_URL}/success`);
   url.searchParams.set("FailURL", `${SITE_URL}/fail`);
-  url.searchParams.set("IsTest", "1");
+    url.searchParams.set("IsTest", "1");
 
   res.json({ url: url.toString(), invId });
 });
