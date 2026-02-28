@@ -283,7 +283,7 @@ const EMOJI_IDS = {
   globe: "5399898266265475100", // 🌐
   check: "5317000668693682217", // ✅
   cross: "5978859389614821335", // ❌
-  fire: "5402406965252989103", // 🔥
+  fire: "5368324170671200001", // 🔥
 };
 
 // Shorthand: wraps emoji in <tg-emoji> for Telegram Premium clients
